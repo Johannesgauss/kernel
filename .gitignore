@@ -1,0 +1,17 @@
+# Build artifacts
+/bin/
+/obj/
+/iso_root/
+*.iso
+*.hdd
+*.log
+
+# Caches and editor tooling
+/.cache/
+/compile_commands.json
+
+# Bootloader binaries and firmware (downloaded at build time)
+/boot/limine-binary/
+/boot/limine-binary.tar.gz
+/edk2-ovmf-bins/
+/edk2-ovmf-bins.tar.gz
