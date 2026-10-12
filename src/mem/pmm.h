@@ -1,0 +1,29 @@
+#ifndef PMM_PMM_H
+#define PMM_PMM_H
+
+#include <stdint.h>
+#include <stdbool.h>
+#include "../util/panic.h"
+
+typedef uint64_t phy_t;
+typedef void *virt_t;
+
+#define PAGE_SIZE 4096
+
+bool pmm_init();
+// first fit
+virt_t pmm_alloc();
+void pmm_free(virt_t addr);
+
+#define HHDM_OFFSET 0XFFFF800000000000
+inline virt_t phy_to_virt(unsigned long phy_addr)
+{
+	return (virt_t)(phy_addr + HHDM_OFFSET);
+}
+
+inline phy_t virt_to_phy(unsigned long virt_addr)
+{
+	return (phy_t)(virt_addr - HHDM_OFFSET);
+}
+
+#endif // PMM_PMM_H
