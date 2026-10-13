@@ -290,6 +290,8 @@ idt_common:
     pushq %rax
 
     cld
+    // TODO: for the majority of functions, this doesn't make sense
+    // Furthermore, use asm macros in the future!
     movq %rsp, %rdi
     call idt_handler
 

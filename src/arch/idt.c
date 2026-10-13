@@ -4,6 +4,7 @@
 #include "drivers/gfx/print_text.h"
 #include "drivers/port.h"
 #include "idt.h"
+#include "irq.h"
 
 extern void *irq_routines[16];
 struct idt_gate {
@@ -66,16 +67,6 @@ void irq_remap()
 
 	outportb(PIC1_DATA, 0x0);
 	outportb(PIC2_DATA, 0x0);
-}
-
-void *irq_routines[16] = {
-	0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0
-};
-
-void irqr_add(int irqr, void (*handler)(void))
-{
-	irq_routines[irqr] = handler;
 }
 
 bool idt_init()

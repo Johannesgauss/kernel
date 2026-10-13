@@ -14,4 +14,8 @@ gdt_load_end:
 	mov %rax, %es
 	mov %rax, %fs
 	mov %rax, %gs
+
+ 	mov $0x28, %rax
+	ltr %rax
+
 	ret
