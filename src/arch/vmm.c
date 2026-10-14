@@ -36,28 +36,29 @@ void vmm_map(void *addr)
 	uint64_t *pt;
 	uint64_t *page;
 
+	// TODO: Of course, it's not a great idea all pages having US bit on. Change it later!
 	if (!(pml4[pml4_offset] & SET_P)) {
 		void *new_page = pmm_alloc();
 		pgtotable(new_page);
-		pml4[pml4_offset] = virt_to_phy((uint64_t)new_page) | SET_P | SET_RW;
+		pml4[pml4_offset] = virt_to_phy((uint64_t)new_page) | SET_P | SET_RW | SET_US;
 	}
 	pdpt = phy_to_virt((pml4[pml4_offset] & GET_PHY_ADDR));
 	if (!(pdpt[pdpt_offset] & SET_P)) {
 		void *new_page = pmm_alloc();
 		pgtotable(new_page);
-		pdpt[pdpt_offset] = virt_to_phy((uint64_t)new_page) | SET_P | SET_RW;
+		pdpt[pdpt_offset] = virt_to_phy((uint64_t)new_page) | SET_P | SET_RW | SET_US;
 	}
 	pd = phy_to_virt((pdpt[pdpt_offset] & GET_PHY_ADDR));
 	if (!(pd[pd_offset] & SET_P)) {
 		void *new_page = pmm_alloc();
 		pgtotable(new_page);
-		pd[pd_offset] = virt_to_phy((uint64_t)new_page) | SET_P | SET_RW;
+		pd[pd_offset] = virt_to_phy((uint64_t)new_page) | SET_P | SET_RW | SET_US;
 	}
 	pt = phy_to_virt((pd[pd_offset] & GET_PHY_ADDR));
 	if (!(pt[pt_offset] & SET_P)) {
 		void *new_page = pmm_alloc();
 		pgtotable(new_page);
-		pt[pt_offset] = virt_to_phy((uint64_t)new_page) | SET_P | SET_RW;
+		pt[pt_offset] = virt_to_phy((uint64_t)new_page) | SET_P | SET_RW | SET_US;
 	}
 	//page = phy_to_virt((pt[pt_offset] & GET_PHY_ADDR));
 }

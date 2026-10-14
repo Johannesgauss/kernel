@@ -91,6 +91,19 @@ run: $(IMAGE_NAME).iso
 		-boot d \
 		$(QEMUFLAGS)
 
+.PHONY: run-debug
+run-debug: $(IMAGE_NAME).iso
+	qemu-system-x86_64 \
+		$(QEMU_MACHINE_FLAGS) \
+		-cdrom $(IMAGE_NAME).iso \
+		-boot d \
+		$(QEMUFLAGS) \
+		-s -S -no-reboot -d int -D qemu.log
+
+.PHONY: gdb
+gdb:
+	gdb -ex "target remote :1234" -ex "symbol-file bin/$(OUTPUT)" -ex "set disassembly-flavor att"
+
 .PHONY: run-uefi
 run-uefi: edk2-ovmf-bins $(IMAGE_NAME).iso
 	qemu-system-x86_64 \

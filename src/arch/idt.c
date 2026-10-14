@@ -45,12 +45,6 @@ static struct idt_gate idt_set_gate(uint64_t offset, uint16_t segment, uint8_t f
 	return gate;
 }
 
-#define PIC1_COMMAND 0x20                                                
-#define PIC1_DATA    0x21                                                
-#define PIC2_COMMAND 0xA0                                                
-#define PIC2_DATA    0xA1                                                
-								     
-#define PIC_EOI      0x20                                                
 void irq_remap()
 {
 	outportb(PIC1_COMMAND, 0x11); io_wait();
@@ -69,6 +63,7 @@ void irq_remap()
 	outportb(PIC2_DATA, 0x0);
 }
 
+extern void *sched_interruption();
 bool idt_init()
 {
 	irq_remap();
@@ -79,6 +74,8 @@ bool idt_init()
 	for (int i = 0; i < IDT_MAX_GATES; i++) {
 		idt[i] = idt_set_gate((uint64_t)idt_stub_table[i], GDT_OFFSET_KERNEL_CODE, 0x8E, 0);
 	}
+	idt[32] = idt_set_gate((uint64_t)sched_interruption, GDT_OFFSET_KERNEL_CODE, 0x8E, 0);
+;
 
 	asm volatile ( "lidt %0" : : "m"(idtr));
 	asm volatile ( "sti" );
@@ -152,6 +149,7 @@ void idt_handler(struct idt_stack_call *regs)
 		exception_handler(regs);
 	} else {
 		void (*handler)(void) = irq_routines[int_no - 32];
+		//if (int_no == 32) { sched_interruption(); }
 		if (handler)
 			handler();
 		if (int_no >= 40) {
