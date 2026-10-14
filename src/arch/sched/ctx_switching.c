@@ -6,6 +6,7 @@
 #include "../../drivers/clk/clk.h"
 #include "../../drivers/port.h"
 #include "drivers/gfx/print_text.h"
+#include "../../sched/proc.h"
 
 extern void sched_interruption();
 extern void ctx_load(void *pointer, void *stack);
@@ -16,29 +17,17 @@ struct ret
 	void *rsp;
 };
 
-void interruption_handler()
-{
-	struct ret r;
-	asm volatile ("lea foo(%%rip), %0" : "=r"(r.rip) :);
-	asm volatile ("lea sched_interruption(%%rip), %%rax" :::);
-	asm volatile("push %%rax" :::);
-	asm volatile ("mov %%rsp, %0" : "=r"(r.rsp) :);
-
-	print_line("Hello!\n");
-	ctx_load(r.rip, r.rsp);
-
-
-	outb(PIC1_COMMAND, PIC_EOI);
-
-}
 
 int foo()
 {
-//	print_line("I'm foo!\n");
-	for (uint64_t i = 0; i < 0xFFFFFFFF; i++) {
-		asm volatile ("nop");
-		//asm volatile ("cli; hlt");
+	print_line("I'm foo!\n");
+	while (1) {
+
 	}
+	//for (uint64_t i = 0; i < 0xFFFFFFF; i++) {
+	//	asm volatile ("nop");
+		//asm volatile ("cli; hlt");
+	//}
 
 	//asm volatile ("sti");
 	//while (1) { asm volatile ("cli; hlt"); }
@@ -46,3 +35,16 @@ int foo()
 }
 
 // TODO: tmp name
+
+void interruption_handler()
+{
+	void *rip, *rsp;
+
+	rip = &foo;
+	asm volatile ("lea proc_suspend(%%rip), %%rax" :::);
+	asm volatile ("push %%rax" :::);
+	asm volatile ("mov %%rsp, %0" : "=r"(rsp) :);
+
+	outb(PIC1_COMMAND, PIC_EOI);
+	ctx_load(rip, rsp);
+}

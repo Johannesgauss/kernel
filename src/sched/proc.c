@@ -8,7 +8,7 @@ typedef enum {
 	PROC_DEAD = 0,
 	PROC_EXEC,
 	PROC_BLOCK,
-	PROC_WAIT
+	PROC_READY
 } state_t;
 
 struct proc {
@@ -22,6 +22,7 @@ struct proc {
 
 
 static ushort id_count = 0;
+static ushort current_proc_id;
 
 // TODO: a better implementation
 struct proc procs[sizeof(utiny)]; // because id is ushort
@@ -45,4 +46,25 @@ struct proc proc_create(ushort id, ushort father_id, ushort group_id, state_t st
 void proc_kill(ushort id)
 {
 	procs[id].state = PROC_DEAD;
+}
+
+void proc_save(struct proc_arch_ctx *ctx)
+{
+	procs[current_proc_id].ctx = *ctx;
+}
+
+void proc_exit(ushort id)
+{
+	procs[id].state = PROC_DEAD;
+}
+
+void proc_suspend(ushort id)
+{
+	procs[id].state = PROC_READY;
+}
+
+void proc_switch(struct proc_arch_ctx *ctx)
+{
+	procs[current_proc_id].ctx = *ctx;
+	procs[current_proc_id].state = PROC_READY;
 }

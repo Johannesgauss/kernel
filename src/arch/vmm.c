@@ -40,25 +40,25 @@ void vmm_map(void *addr)
 	if (!(pml4[pml4_offset] & SET_P)) {
 		void *new_page = pmm_alloc();
 		pgtotable(new_page);
-		pml4[pml4_offset] = virt_to_phy((uint64_t)new_page) | SET_P | SET_RW | SET_US;
+		pml4[pml4_offset] = virt_to_phy((uint64_t)new_page) | SET_P | SET_RW;
 	}
 	pdpt = phy_to_virt((pml4[pml4_offset] & GET_PHY_ADDR));
 	if (!(pdpt[pdpt_offset] & SET_P)) {
 		void *new_page = pmm_alloc();
 		pgtotable(new_page);
-		pdpt[pdpt_offset] = virt_to_phy((uint64_t)new_page) | SET_P | SET_RW | SET_US;
+		pdpt[pdpt_offset] = virt_to_phy((uint64_t)new_page) | SET_P | SET_RW;
 	}
 	pd = phy_to_virt((pdpt[pdpt_offset] & GET_PHY_ADDR));
 	if (!(pd[pd_offset] & SET_P)) {
 		void *new_page = pmm_alloc();
 		pgtotable(new_page);
-		pd[pd_offset] = virt_to_phy((uint64_t)new_page) | SET_P | SET_RW | SET_US;
+		pd[pd_offset] = virt_to_phy((uint64_t)new_page) | SET_P | SET_RW;
 	}
 	pt = phy_to_virt((pd[pd_offset] & GET_PHY_ADDR));
 	if (!(pt[pt_offset] & SET_P)) {
 		void *new_page = pmm_alloc();
 		pgtotable(new_page);
-		pt[pt_offset] = virt_to_phy((uint64_t)new_page) | SET_P | SET_RW | SET_US;
+		pt[pt_offset] = virt_to_phy((uint64_t)new_page) | SET_P | SET_RW;
 	}
 	//page = phy_to_virt((pt[pt_offset] & GET_PHY_ADDR));
 }

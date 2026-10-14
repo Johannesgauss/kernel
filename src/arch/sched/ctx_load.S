@@ -10,16 +10,18 @@
 ctx_load:
 	mov %rsp, tss+4(%rip) 
 
-	push $USER_DATA
+	push $KERNEL_DATA
 	push %rsi
-	pushfq
-	push $USER_CODE
+	push $0x202 // TODO a better way!
+	push $KERNEL_CODE
 	push %rdi
 
 	iretq
 
 .extern interruption_handler
 .type interruption_handler, @function
+ //.extern proc_save 
+ //.type proc_save, @function
 sched_interruption:
 	cld
 	// TODO: for the majority of functions, this doesn't make sense
