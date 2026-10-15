@@ -48,6 +48,8 @@ idt_stub 0, 31
 /* Hardware IRQs & Remaining Interrupts (32 - 255) */
 //idt_stub 0, 32
 // TODO better architecture for it!
+.extern idt_syscall 
+.type idt_syscall, @function
 .extern sched_interruption
 .type sched_interruption, @function
 idt_stub 0, 33
@@ -145,7 +147,7 @@ idt_stub 0, 124
 idt_stub 0, 125
 idt_stub 0, 126
 idt_stub 0, 127
-idt_stub 0, 128
+//idt_stub 0, 128
 idt_stub 0, 129
 idt_stub 0, 130
 idt_stub 0, 131
@@ -455,7 +457,8 @@ idt_stub_table:
     .quad idt125
     .quad idt126
     .quad idt127
-    .quad idt128
+    //.quad idt128
+    .quad idt_syscall
     .quad idt129
     .quad idt130
     .quad idt131

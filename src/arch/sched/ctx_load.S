@@ -8,11 +8,14 @@
 .global ctx_load
 .type ctx_load, @function
 ctx_load:
+	mov %rsp, %rax
+
 	mov %rsp, tss+4(%rip) 
 
 	push $KERNEL_DATA
-	push %rsi
-	push $0x202 // TODO a better way!
+	push %rsi // stack
+	pushfq
+	//push $0x202 // TODO a better way!
 	push $KERNEL_CODE
 	push %rdi
 
@@ -26,7 +29,26 @@ sched_interruption:
 	cld
 	// TODO: for the majority of functions, this doesn't make sense
 	// Furthermore, use asm macros in the future!
-	movq %rsp, %rdi
+	mov %rsp, %rdi
 	call interruption_handler
 
 	iretq
+.global sys_exit
+.type sys_exit, @function
+.global proc_exit
+.type proc_exit, @function
+sys_exit:
+	mov tss+4, %rsp
+
+	sti
+	call proc_exit
+	call interruption_handler
+.hlt:
+	nop
+	jmp .hlt
+
+.global exitt
+.type exitt, @function
+exitt:
+	mov $0, %rax
+	int $0x80

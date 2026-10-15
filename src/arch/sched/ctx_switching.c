@@ -11,40 +11,20 @@
 extern void sched_interruption();
 extern void ctx_load(void *pointer, void *stack);
 
-struct ret
-{
-	void *rip;
-	void *rsp;
-};
-
-
-int foo()
-{
-	print_line("I'm foo!\n");
-	while (1) {
-
-	}
-	//for (uint64_t i = 0; i < 0xFFFFFFF; i++) {
-	//	asm volatile ("nop");
-		//asm volatile ("cli; hlt");
-	//}
-
-	//asm volatile ("sti");
-	//while (1) { asm volatile ("cli; hlt"); }
-	return 1;
-}
-
 // TODO: tmp name
+static uint64_t tmp_stack[5000];
 
 void interruption_handler()
 {
-	void *rip, *rsp;
-
-	rip = &foo;
-	asm volatile ("lea proc_suspend(%%rip), %%rax" :::);
-	asm volatile ("push %%rax" :::);
-	asm volatile ("mov %%rsp, %0" : "=r"(rsp) :);
-
+	struct proc next = proc_sched();
 	outb(PIC1_COMMAND, PIC_EOI);
-	ctx_load(rip, rsp);
+	ctx_load(next.ctx.rip, next.ctx.rsp);
+}
+
+extern void sys_exit();
+void idt_syscall(int code)
+{
+	//if (code == 0) {
+		sys_exit();
+	//}
 }

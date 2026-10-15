@@ -24,5 +24,6 @@ struct proc proc_create(ushort id, ushort father_id, ushort group_id, state_t st
 
 void proc_kill(ushort id);
 void proc_exit(ushort id);
+struct proc proc_sched();
 
-#endif SCHED_PROC
+#endif // SCHED_PROC
