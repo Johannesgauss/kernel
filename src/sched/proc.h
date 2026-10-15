@@ -13,17 +13,14 @@ typedef enum {
 
 struct proc {
 	utiny id;
-	ushort father_id;
-	ushort group_id;
 	state_t state;
 	struct proc_arch_ctx ctx;
-	utiny priority;
 };
 
 struct proc proc_create(ushort id, ushort father_id, ushort group_id, state_t state, struct proc_arch_ctx ctx, utiny priority);
 
 void proc_kill(ushort id);
-void proc_exit(ushort id);
+void proc_exit(int retvalue);
 struct proc proc_sched();
 
 #endif // SCHED_PROC

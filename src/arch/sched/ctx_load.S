@@ -1,12 +1,29 @@
+.global sched_interruption
+.type sched_interruption, @function
+.extern interruption_handler
+.type interruption_handler, @function
+sched_interruption:
+	// TODO: verify it under debugger later!
+	// The ideia here is removing the stack suffed hardware did to a random register
+	// in this case, rax
+	pop %rax
+	pop %rax
+	pop %rax
+	pop %rax
+	pop %rax
+
+	cld
+	// TODO: for the majority of functions, this doesn't make sense
+	// Furthermore, use asm macros in the future!
+	//mov %rsp, %rdi
+	call interruption_handler
+.extern tss
+.global ctx_load
+.type ctx_load, @function
 #define KERNEL_CODE 0x08
 #define KERNEL_DATA 0x10
 #define USER_CODE 0x1b
 #define USER_DATA 0x23
-.global sched_interruption
-.type sched_interruption, @function
-.extern tss
-.global ctx_load
-.type ctx_load, @function
 ctx_load:
 	mov %rsp, %rax
 
@@ -20,35 +37,3 @@ ctx_load:
 	push %rdi
 
 	iretq
-
-.extern interruption_handler
-.type interruption_handler, @function
- //.extern proc_save 
- //.type proc_save, @function
-sched_interruption:
-	cld
-	// TODO: for the majority of functions, this doesn't make sense
-	// Furthermore, use asm macros in the future!
-	mov %rsp, %rdi
-	call interruption_handler
-
-	iretq
-.global sys_exit
-.type sys_exit, @function
-.global proc_exit
-.type proc_exit, @function
-sys_exit:
-	mov tss+4, %rsp
-
-	sti
-	call proc_exit
-	call interruption_handler
-.hlt:
-	nop
-	jmp .hlt
-
-.global exitt
-.type exitt, @function
-exitt:
-	mov $0, %rax
-	int $0x80

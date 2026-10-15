@@ -18,9 +18,6 @@ void kmain()
 	if (gdt_init())
 		print_line("[ SUCCESS ] Global Descriptor Table (GDT) loaded. \n");
 	
-	if (idt_init())
-		print_line("[ SUCCESS ] Interrupt Descriptor Table (IDT) loaded.\n");
-
 	if (timer_add())
 		print_line("[ SUCCESS ] Programmable Interval Timer (PIT) setted on Interrupt Request 0 (IRQ0).\n");
 
@@ -29,6 +26,11 @@ void kmain()
 
 	if (vmm_init())
 		print_line("[ SUCCESS ] Virtual Memory Managment (VMM) loaded.\n");
+
+
+	if (idt_init())
+		print_line("[ SUCCESS ] Interrupt Descriptor Table (IDT) loaded.\n");
+
 
 	char *full_word = kmalloc(30);
 	full_word = "Hello, World!\n";

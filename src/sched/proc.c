@@ -5,10 +5,9 @@
 #define PROCS_MAX 255
 
 
-extern void exitt();
+extern void retsys();
 int foo()
 {
-	while (1) {}
 	print_line("I'm foo!\n");
 	for (uint64_t i = 0; i < 0xFFFFFFF; i++) {
 		asm volatile ("nop");
@@ -18,7 +17,7 @@ int foo()
 	//asm volatile ("sti");
 	//while (1) { asm volatile ("cli; hlt"); }
 	
-	exitt();
+	retsys();
 }
 
 int fizz()
@@ -32,7 +31,7 @@ int fizz()
 	//asm volatile ("sti");
 	//while (1) { asm volatile ("cli; hlt"); }
 	
-	exitt();
+	retsys();
 }
 
 
@@ -89,9 +88,15 @@ void proc_save(struct proc_arch_ctx *ctx)
 	procs[current_proc_id].ctx = *ctx;
 }
 
-void proc_exit()
+void proc_exit(int retvalue)
 {
+	if (!retvalue)
+		print_line("SUCESS! ->");
 	procs[current_proc_id].state = PROC_DEAD;
+	if (current_proc_id == 0)
+		current_proc_id = 1;
+	else 
+		current_proc_id = 0;
 }
 
 void proc_suspend(ushort id)
@@ -107,10 +112,5 @@ void proc_switch(struct proc_arch_ctx *ctx)
 
 struct proc proc_sched()
 {
-	if (current_proc_id == 0)
-		current_proc_id = 1;
-	else 
-		current_proc_id = 0;
-
 	return procs[current_proc_id];
 }
