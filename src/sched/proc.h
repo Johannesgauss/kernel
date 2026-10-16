@@ -14,9 +14,9 @@ typedef enum {
 } state_t;
 
 struct proc {
-	utiny id;
-	state_t state;
 	struct int_frame ctx;
+	state_t state;
+	utiny id;
 };
 
 struct proc proc_create(state_t state, struct int_frame ctx);
