@@ -14,11 +14,14 @@ typedef enum {
 
 struct proc {
 	struct int_frame ctx;
+	virt_t stbase;
 	state_t state;
 	utiny id;
+	utiny retvalue;
 };
 
-struct proc proc_create(state_t state, virt_t ptr, size_t stack_size);
+struct proc proc_inst(state_t state, virt_t ptr, size_t stack_size);
+struct proc proc_create(virt_t ptr, size_t stack_size);
 
 void proc_kill(ushort id);
 void proc_exit(int retvalue);

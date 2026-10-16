@@ -4,8 +4,8 @@
 .extern tss
 #include "arch/gdt_macros.h"
 #include "drivers/clk/clk_macros.h"
-// TODO: comment it better!
-// Update:
+// was_todo: comment it better!
+// Update: Done!
 int_handler:
 	pushq %r15
 	pushq %r14
@@ -26,37 +26,22 @@ int_handler:
 	mov %rsp, %rdi
 	call proc_sched
 	mov %rax, %rbx
+	// inside %rbx lies the new process!
 
 	mov $PIC1_COMMAND, %rdi
 	mov $PIC_EOI, %rsi
 	call outb
 
-	popq %rax
-	movq %rbx, %rax
-	popq %rbx
-	popq %rcx
-	popq %rdx
-	popq %rsi
-	popq %rdi
-	popq %rbp
-	popq %r8
-	popq %r9
-	popq %r10
-	popq %r11
-	popq %r12
-	popq %r13
-	popq %r14
-	popq %r15
-	// inside %rax lies the new process!
+	add $0xA0, %rsp // d15*8 + 0x28 = 0xA0
+	// 0x28 because of hw_frame stuff pushed by machine
 	
 	// to get rip
-	mov ctx_off+0x78(%rax), %rdi
-	mov ctx_off+0x88(%rax), %rsi
+	mov ctx_off+0x78(%rbx), %rdi
+	// to get rflags
+	mov ctx_off+0x88(%rbx), %rsi
 	// to get rsp
-	mov ctx_off+0x90(%rax), %rdx
+	mov ctx_off+0x90(%rbx), %rdx
 
-	// because of hw_frame stuff pushed by machine
-	add $0x28, %rsp
 	mov %rsp, tss+4(%rip) 
 
 	push $GDT_OFFSET_KERNEL_DATA
@@ -67,21 +52,22 @@ int_handler:
 	push $GDT_OFFSET_KERNEL_CODE
 	push %rdi
 
-	mov ctx_off+0x70(%rax), %r15
-	mov ctx_off+0x68(%rax), %r14
-	mov ctx_off+0x60(%rax), %r13
-	mov ctx_off+0x58(%rax), %r12
-	mov ctx_off+0x50(%rax), %r11
-	mov ctx_off+0x48(%rax), %r10
-	mov ctx_off+0x40(%rax), %r9
-	mov ctx_off+0x38(%rax), %r8
-	mov ctx_off+0x30(%rax), %rbp
-	mov ctx_off+0x28(%rax), %rdi
-	mov ctx_off+0x20(%rax), %rsi
-	mov ctx_off+0x18(%rax), %rdx
-	mov ctx_off+0x10(%rax), %rcx
-	mov ctx_off+8(%rax), %rbx
-	push ctx_off+0(%rax)
-	pop %rax
+	mov ctx_off+0x70(%rbx), %r15
+	mov ctx_off+0x68(%rbx), %r14
+	mov ctx_off+0x60(%rbx), %r13
+	mov ctx_off+0x58(%rbx), %r12
+	mov ctx_off+0x50(%rbx), %r11
+	mov ctx_off+0x48(%rbx), %r10
+	mov ctx_off+0x40(%rbx), %r9
+	mov ctx_off+0x38(%rbx), %r8
+	mov ctx_off+0x30(%rbx), %rbp
+	mov ctx_off+0x28(%rbx), %rdi
+	mov ctx_off+0x20(%rbx), %rsi
+	mov ctx_off+0x18(%rbx), %rdx
+	mov ctx_off+0x10(%rbx), %rcx
+
+	mov ctx_off+0(%rbx), %rax
+	push ctx_off+0(%rbx)
+	pop %rbx
 
 	iretq

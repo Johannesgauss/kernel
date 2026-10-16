@@ -133,9 +133,6 @@ void exception_handler(struct idt_stack_call *regs)
 void proc_tmp_setup();
 void idt_handler(struct idt_stack_call *regs)
 {
-
-	proc_tmp_setup();
-
 	uint64_t int_no = get_vector(regs);
 	if (int_no < 32) {
 		exception_handler(regs);
