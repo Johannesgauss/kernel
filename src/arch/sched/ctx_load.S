@@ -7,6 +7,7 @@
 #define USER_CODE 0x1b
 #define USER_DATA 0x23
 #include "drivers/clk/pit_defs.h"
+// TODO: comment it better!
 int_handler:
 	pushq %r15
 	pushq %r14

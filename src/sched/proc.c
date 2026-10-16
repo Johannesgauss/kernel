@@ -1,6 +1,5 @@
 #include "../mem/pmm.h"
 #include "../mem/kmalloc.h"
-#include "../arch/sched/proc_ctx.h"
 #include "../util/alias.h"
 #include "proc.h"
 #include "test/test.h"
@@ -20,8 +19,8 @@ struct proc procs[2]; // because id is ushort
 
 void proc_tmp_setup()
 {
-	void *rsp = vmalloc(500000);
-	void *rsp2 = vmalloc(500000);
+	void *rsp = vmalloc(5000) - 5000;
+	void *rsp2 = vmalloc(5000) - 5000;
 	struct hw_frame hf;
 	struct int_frame if1 = {
 		{0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -45,7 +44,7 @@ struct proc proc_create(state_t state, struct int_frame ctx)
 	proc.state = state;
 	proc.ctx = ctx;
 
-	proc.ctx.hw.rsp = (phy_t)vmalloc(5000);
+	proc.ctx.hw.rsp = (phy_t)vmalloc(5000) - 5000;
 
 	return proc;
 }

@@ -173,6 +173,7 @@ override LD_HAS_FLAG = $(shell ! LC_ALL=C $(CC) $(CFLAGS) $(LDFLAGS) -Wl,--help 
 override CFLAGS += \
     -Wall \
     -Wextra \
+    -Wpadded \
     -std=gnu11 \
     -ffreestanding \
     -fno-common \

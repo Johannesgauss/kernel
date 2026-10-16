@@ -1,9 +1,7 @@
 #ifndef SCHED_PROC
 #define SCHED_PROC
 
-#include "../arch/sched/proc_ctx.h"
 #include "../util/alias.h"
-#include "arch/idt.h"
 #include "../arch/idt.h"
 
 typedef enum {
