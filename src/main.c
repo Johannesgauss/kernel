@@ -10,6 +10,7 @@ extern bool pmm_init();
 extern bool vmm_init();
 extern void vmm_free(void *addr);
 extern void *kmalloc(size_t size);
+extern void proc_tmp_setup();
 
 void kmain() 
 {
@@ -27,6 +28,7 @@ void kmain()
 	if (vmm_init())
 		print_line("[ SUCCESS ] Virtual Memory Managment (VMM) loaded.\n");
 
+	proc_tmp_setup();
 
 	if (idt_init())
 		print_line("[ SUCCESS ] Interrupt Descriptor Table (IDT) loaded.\n");

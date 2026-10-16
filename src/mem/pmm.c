@@ -4,10 +4,9 @@
 #include <stdbool.h>
 #include "util/panic.h"
 #include "pmm.h"
+#include "util/alias.h"
 
 #define HHDM_OFFSET 0XFFFF800000000000
-typedef uint64_t phy_t;
-typedef void *virt_t;
 
 // TODO: Substitute the linked list by a tree. Way more efficient!
 

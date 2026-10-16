@@ -39,5 +39,8 @@ void kfree(virt_t addr)
 	return;	
 }
 
-virt_t vmalloc(size_t size);
+virt_t vmalloc(size_t size)
+{
+	return kmalloc(size);
+};
 void vfree(virt_t addr);

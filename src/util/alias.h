@@ -1,3 +1,5 @@
+#ifndef UTIL_ALIAS_H
+#define UTIL_ALIAS_H
 #include <stdint.h>
 typedef int8_t byte;
 typedef uint8_t ubyte;
@@ -13,3 +15,7 @@ typedef long long int llint;
 #define intern static
 #define local static
 typedef uint64_t addr;
+typedef uint64_t phy_t;
+typedef void *virt_t;
+
+#endif // UTIL_ALIAS_H

@@ -3,24 +3,26 @@
 
 #include "../arch/sched/proc_ctx.h"
 #include "../util/alias.h"
+#include "arch/idt.h"
+#include "../arch/idt.h"
 
 typedef enum {
 	PROC_DEAD = 0,
-	PROC_EXEC,
-	PROC_BLOCK,
-	PROC_WAIT
+	PROC_EXEC = 1,
+	PROC_BLOCK = 2,
+	PROC_READY = 3
 } state_t;
 
 struct proc {
 	utiny id;
 	state_t state;
-	struct proc_arch_ctx ctx;
+	struct int_frame ctx;
 };
 
-struct proc proc_create(ushort id, ushort father_id, ushort group_id, state_t state, struct proc_arch_ctx ctx, utiny priority);
+struct proc proc_create(state_t state, struct int_frame ctx);
 
 void proc_kill(ushort id);
 void proc_exit(int retvalue);
-struct proc proc_sched();
+struct proc *proc_sched(struct int_frame *hf);
 
 #endif // SCHED_PROC

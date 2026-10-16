@@ -7,13 +7,6 @@
 #define IDT_MAX_GATES 256
 
 
-#define PIC1_COMMAND 0x20                                                
-#define PIC1_DATA    0x21                                                
-#define PIC2_COMMAND 0xA0                                                
-#define PIC2_DATA    0xA1                                                
-								     
-#define PIC_EOI      0x20                                                
-
 struct gp_regs {
 	uint64_t rax;
 	uint64_t rbx;
@@ -38,6 +31,12 @@ struct hw_frame {
 	uint64_t rflags;
 	uint64_t rsp;
 	uint64_t ss;
+};
+
+struct int_frame
+{
+	struct gp_regs gp;
+	struct hw_frame hw;
 };
 
 struct idt_stack_call {

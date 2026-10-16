@@ -50,8 +50,8 @@ idt_stub 0, 31
 // TODO better architecture for it!
 .extern syscall_handler 
 .type syscall_handler, @function
-.extern sched_interruption
-.type sched_interruption, @function
+.extern int_handler
+.type int_handler, @function
 idt_stub 0, 33
 idt_stub 0, 34
 idt_stub 0, 35
@@ -361,7 +361,7 @@ idt_stub_table:
     .quad idt30
     .quad idt31
     //.quad idt32
-    .quad sched_interruption
+    .quad int_handler
     .quad idt33
     .quad idt34
     .quad idt35

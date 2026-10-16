@@ -3,7 +3,6 @@ extern void print_line(char *line);
 
 void syscall_handler(int code, int param)
 {
-	print_line("here!");
 	if (code == 0) {
 		sys_exit(param);
 	}

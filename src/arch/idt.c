@@ -5,6 +5,7 @@
 #include "drivers/port.h"
 #include "idt.h"
 #include "irq.h"
+#include "drivers/clk/pit_defs.h"
 
 extern void *irq_routines[16];
 struct idt_gate {
@@ -63,7 +64,7 @@ void irq_remap()
 	outportb(PIC2_DATA, 0x0);
 }
 
-extern void *sched_interruption();
+extern void *int_handler();
 bool idt_init()
 {
 	irq_remap();
@@ -74,26 +75,13 @@ bool idt_init()
 	for (int i = 0; i < IDT_MAX_GATES; i++) {
 		idt[i] = idt_set_gate((uint64_t)idt_stub_table[i], GDT_OFFSET_KERNEL_CODE, 0x8E, 0);
 	}
-	idt[32] = idt_set_gate((uint64_t)sched_interruption, GDT_OFFSET_KERNEL_CODE, 0x8E, 0);
+	idt[32] = idt_set_gate((uint64_t)int_handler, GDT_OFFSET_KERNEL_CODE, 0x8E, 0);
 ;
 
 	asm volatile ( "lidt %0" : : "m"(idtr));
 	asm volatile ( "sti" );
 
 	return true;
-}
-
-void print_hex(uint64_t val)
-{
-	char hex_chars[] = "0123456789ABCDEF";
-	char buf[19];
-	buf[0] = '0';
-	buf[1] = 'x';
-	for (int i = 15; i >= 0; i--) {
-		buf[2 + (15 - i)] = hex_chars[(val >> (i * 4)) & 0xF];
-	}
-	buf[18] = '\0';
-	print_line(buf);
 }
 
 void exception_handler(struct idt_stack_call *regs)
@@ -142,14 +130,18 @@ void exception_handler(struct idt_stack_call *regs)
 	}
 }
 
+void proc_tmp_setup();
 void idt_handler(struct idt_stack_call *regs)
 {
+
+	proc_tmp_setup();
+
 	uint64_t int_no = get_vector(regs);
 	if (int_no < 32) {
 		exception_handler(regs);
 	} else {
 		void (*handler)(void) = irq_routines[int_no - 32];
-		//if (int_no == 32) { sched_interruption(); }
+		//if (int_no == 32) { int_handler(); }
 		if (handler)
 			handler();
 		if (int_no >= 40) {
