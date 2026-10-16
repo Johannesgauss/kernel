@@ -7,21 +7,21 @@
 // was_todo: comment it better!
 // Update: Done!
 int_handler:
-	pushq %r15
-	pushq %r14
-	pushq %r13
-	pushq %r12
-	pushq %r11
-	pushq %r10
-	pushq %r9
-	pushq %r8
-	pushq %rbp
-	pushq %rdi
-	pushq %rsi
-	pushq %rdx
-	pushq %rcx
-	pushq %rbx
-	pushq %rax
+	push %r15
+	push %r14
+	push %r13
+	push %r12
+	push %r11
+	push %r10
+	push %r9
+	push %r8
+	push %rbp
+	push %rdi
+	push %rsi
+	push %rdx
+	push %rcx
+	push %rbx
+	push %rax
 
 	mov %rsp, %rdi
 	call proc_sched
@@ -67,7 +67,6 @@ int_handler:
 	mov ctx_off+0x10(%rbx), %rcx
 
 	mov ctx_off+0(%rbx), %rax
-	push ctx_off+0(%rbx)
-	pop %rbx
+	mov ctx_off+8(%rbx), %rbx
 
 	iretq
