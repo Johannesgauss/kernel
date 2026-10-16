@@ -5,7 +5,7 @@
 #include "drivers/port.h"
 #include "idt.h"
 #include "irq.h"
-#include "drivers/clk/pit_defs.h"
+#include "drivers/clk/clk_macros.h"
 
 extern void *irq_routines[16];
 struct idt_gate {
@@ -119,11 +119,11 @@ void exception_handler(struct idt_stack_call *regs)
 	default: print_line("Reserved / Unknown Exception\n"); break;
 	}
 
-	print_line("RIP:    "); print_hex(regs->hw.rip);      print_line("\n");
-	print_line("CS:     "); print_hex(regs->hw.cs);       print_line("\n");
-	print_line("RFLAGS: "); print_hex(regs->hw.rflags);   print_line("\n");
-	print_line("RSP:    "); print_hex(regs->hw.rsp);      print_line("\n");
-	print_line("ERR:    "); print_hex(regs->err_code);    print_line("\n");
+	print_line("RIP:    "); print_hex((uint64_t)regs->hw.rip);      print_line("\n");
+	print_line("CS:     "); print_hex((uint64_t)regs->hw.cs);       print_line("\n");
+	print_line("RFLAGS: "); print_hex((uint64_t)regs->hw.rflags);   print_line("\n");
+	print_line("RSP:    "); print_hex((uint64_t)regs->hw.rsp);      print_line("\n");
+	print_line("ERR:    "); print_hex((uint64_t)regs->err_code);    print_line("\n");
 
 	while (1) {
 		asm volatile ("cli; hlt");

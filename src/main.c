@@ -1,6 +1,6 @@
 #include "drivers/gfx/print_text.h"
 #include "arch/gdt.h"
-#include "arch/idt.h"
+#include "arch/int/idt.h"
 #include "drivers/clk/clk.h"
 
 extern void kb_handler(void);

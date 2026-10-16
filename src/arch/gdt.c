@@ -2,6 +2,7 @@
 #include <stdbool.h> 
 #include "gdt.h"
 #include "../util/memory.h"
+#include "gdt_macros.h"
 
 #define GDT_TSS 0x0089
 

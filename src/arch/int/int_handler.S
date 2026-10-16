@@ -2,12 +2,10 @@
 .global int_handler
 .type int_handler, @function
 .extern tss
-#define KERNEL_CODE 0x08
-#define KERNEL_DATA 0x10
-#define USER_CODE 0x1b
-#define USER_DATA 0x23
-#include "drivers/clk/pit_defs.h"
+#include "arch/gdt_macros.h"
+#include "drivers/clk/clk_macros.h"
 // TODO: comment it better!
+// Update:
 int_handler:
 	pushq %r15
 	pushq %r14
@@ -32,7 +30,6 @@ int_handler:
 	mov $PIC1_COMMAND, %rdi
 	mov $PIC_EOI, %rsi
 	call outb
-	// until here, it's right
 
 	popq %rax
 	movq %rbx, %rax
@@ -54,17 +51,20 @@ int_handler:
 	
 	// to get rip
 	mov ctx_off+0x78(%rax), %rdi
-	// to get rax
-	mov ctx_off+0x90(%rax), %rsi
+	mov ctx_off+0x88(%rax), %rsi
+	// to get rsp
+	mov ctx_off+0x90(%rax), %rdx
 
+	// because of hw_frame stuff pushed by machine
 	add $0x28, %rsp
 	mov %rsp, tss+4(%rip) 
 
-	push $KERNEL_DATA
-	push %rsi // stack
+	push $GDT_OFFSET_KERNEL_DATA
+	push %rdx // stack
 	//pushfq
-	push $0x202 // TODO a better way!
-	push $KERNEL_CODE
+	push %rsi
+	//push $0x202 // TODO a better way!
+	push $GDT_OFFSET_KERNEL_CODE
 	push %rdi
 
 	mov ctx_off+0x70(%rax), %r15

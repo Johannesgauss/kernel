@@ -6,35 +6,19 @@
 
 #define PROCS_MAX 255
 
-
 static ushort id_count = 0;
 static ushort current_proc_id = 0;
 
-static uint64_t stack[5000];
-static uint64_t stack2[5000];
-
-struct proc proc_create(state_t state, struct int_frame ctx);
 // TODO: a better implementation
 struct proc procs[2]; // because id is ushort
 
 void proc_tmp_setup()
 {
-	void *rsp = vmalloc(5000) - 5000;
-	void *rsp2 = vmalloc(5000) - 5000;
-	struct hw_frame hf;
-	struct int_frame if1 = {
-		{0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{ (uint64_t)&foo, 0, 0, (uint64_t)stack+500, 0}
-	};
-	struct int_frame if2 = {
-		{0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0}, 
-		{ (uint64_t)&fizz, 0, 0, (uint64_t)stack2+500, 0}
-	};
-	procs[0] = proc_create( PROC_READY, if1);
-	procs[1] = proc_create( PROC_READY, if2);
+	procs[0] = proc_create(PROC_READY, &foo, 5000);
+	procs[1] = proc_create(PROC_READY, &fizz, 5000);
 }
 
-struct proc proc_create(state_t state, struct int_frame ctx)
+struct proc proc_create(state_t state, virt_t ptr, size_t stack_size)
 {
 	struct proc proc;
 
@@ -42,9 +26,12 @@ struct proc proc_create(state_t state, struct int_frame ctx)
 	id_count++;
 
 	proc.state = state;
-	proc.ctx = ctx;
 
-	proc.ctx.hw.rsp = (phy_t)vmalloc(5000) - 5000;
+	proc.ctx.gp = (struct gp_regs) {0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
+	proc.ctx.hw.rsp = vmalloc(stack_size) + stack_size;
+	proc.ctx.hw.rip = ptr;
+	proc.ctx.hw.rflags = (size_t) 0x202;
 
 	return proc;
 }

@@ -17,5 +17,6 @@ typedef long long int llint;
 typedef uint64_t addr;
 typedef uint64_t phy_t;
 typedef void *virt_t;
+//typedef unsigned long long int size_t;
 
 #endif // UTIL_ALIAS_H

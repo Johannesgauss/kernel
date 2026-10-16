@@ -2,7 +2,8 @@
 #define SCHED_PROC
 
 #include "../util/alias.h"
-#include "../arch/idt.h"
+#include "../arch/int/idt.h"
+#include <stddef.h>
 
 typedef enum {
 	PROC_DEAD = 0,
@@ -17,7 +18,7 @@ struct proc {
 	utiny id;
 };
 
-struct proc proc_create(state_t state, struct int_frame ctx);
+struct proc proc_create(state_t state, virt_t ptr, size_t stack_size);
 
 void proc_kill(ushort id);
 void proc_exit(int retvalue);
