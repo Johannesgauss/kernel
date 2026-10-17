@@ -25,17 +25,13 @@ use core::sync::atomic::{AtomicUsize, Ordering};
 
 static TIMER_TICKS:AtomicUsize = AtomicUsize::new(0);
 
-#[no_mangle]
-pub extern "C" fn timer_handler()
-{
-    TIMER_TICKS.fetch_add(1, Ordering::Relaxed);
-}
+//#[no_mangle] pub extern "C" fn timer_handler() { TIMER_TICKS.fetch_add(1, Ordering::Relaxed); }
 
 #[no_mangle]
 pub extern "C" fn timer_add() -> bool
 {
     timer_phase(100);
-    irqr_add(0, timer_handler);
+    //irqr_add(0, timer_handler);
 
     return true;
 }
