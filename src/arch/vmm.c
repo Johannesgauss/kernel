@@ -36,6 +36,7 @@ void vmm_map(void *addr)
 	uint64_t *pt;
 	uint64_t *page;
 
+	// TODO: Of course, it's not a great idea all pages having US bit on. Change it later!
 	if (!(pml4[pml4_offset] & SET_P)) {
 		void *new_page = pmm_alloc();
 		pgtotable(new_page);

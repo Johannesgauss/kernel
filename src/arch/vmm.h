@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-static uint64_t *pml4;
+//static uint64_t *pml4;
 void vmm_map(void *addr);
 
 bool vmm_init();

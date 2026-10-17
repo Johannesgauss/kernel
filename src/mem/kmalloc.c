@@ -12,7 +12,7 @@ virt_t kmalloc(size_t size)
 	if (size < PAGE_SIZE) {
 		virt_t alloc_offset = 0;
 		if ((uintptr_t)(g_page_offset + size) < PAGE_SIZE) {
-			virt_t alloc_offset = g_page_offset;
+			alloc_offset = g_page_offset;
 			g_page_offset += size;
 		} else if ((uintptr_t)(g_page_offset + size) >= PAGE_SIZE) {
 			g_page_base += PAGE_SIZE;
@@ -39,5 +39,11 @@ void kfree(virt_t addr)
 	return;	
 }
 
-virt_t vmalloc(size_t size);
-void vfree(virt_t addr);
+virt_t vmalloc(size_t size)
+{
+	return kmalloc(size);
+};
+void vfree(virt_t addr)
+{
+	return;
+}
