@@ -4,6 +4,8 @@
 #include "drivers/gfx/print_text.h"
 #include "drivers/port.h"
 #include "idt.h"
+#include "irq.h"
+#include "drivers/clk/clk_macros.h"
 
 extern void *irq_routines[16];
 struct idt_gate {
@@ -44,12 +46,6 @@ static struct idt_gate idt_set_gate(uint64_t offset, uint16_t segment, uint8_t f
 	return gate;
 }
 
-#define PIC1_COMMAND 0x20                                                
-#define PIC1_DATA    0x21                                                
-#define PIC2_COMMAND 0xA0                                                
-#define PIC2_DATA    0xA1                                                
-								     
-#define PIC_EOI      0x20                                                
 void irq_remap()
 {
 	outportb(PIC1_COMMAND, 0x11); io_wait();
@@ -68,16 +64,7 @@ void irq_remap()
 	outportb(PIC2_DATA, 0x0);
 }
 
-void *irq_routines[16] = {
-	0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0
-};
-
-void irqr_add(int irqr, void (*handler)(void))
-{
-	irq_routines[irqr] = handler;
-}
-
+extern void *int_handler();
 bool idt_init()
 {
 	irq_remap();
@@ -88,24 +75,13 @@ bool idt_init()
 	for (int i = 0; i < IDT_MAX_GATES; i++) {
 		idt[i] = idt_set_gate((uint64_t)idt_stub_table[i], GDT_OFFSET_KERNEL_CODE, 0x8E, 0);
 	}
+	idt[32] = idt_set_gate((uint64_t)int_handler, GDT_OFFSET_KERNEL_CODE, 0x8E, 0);
+;
 
 	asm volatile ( "lidt %0" : : "m"(idtr));
 	asm volatile ( "sti" );
-	
-	return true;
-}
 
-void print_hex(uint64_t val)
-{
-	char hex_chars[] = "0123456789ABCDEF";
-	char buf[19];
-	buf[0] = '0';
-	buf[1] = 'x';
-	for (int i = 15; i >= 0; i--) {
-		buf[2 + (15 - i)] = hex_chars[(val >> (i * 4)) & 0xF];
-	}
-	buf[18] = '\0';
-	print_line(buf);
+	return true;
 }
 
 void exception_handler(struct idt_stack_call *regs)
@@ -143,17 +119,18 @@ void exception_handler(struct idt_stack_call *regs)
 	default: print_line("Reserved / Unknown Exception\n"); break;
 	}
 
-	print_line("RIP:    "); print_hex(regs->hw.rip);      print_line("\n");
-	print_line("CS:     "); print_hex(regs->hw.cs);       print_line("\n");
-	print_line("RFLAGS: "); print_hex(regs->hw.rflags);   print_line("\n");
-	print_line("RSP:    "); print_hex(regs->hw.rsp);      print_line("\n");
-	print_line("ERR:    "); print_hex(regs->err_code);    print_line("\n");
+	print_line("RIP:    "); print_hex((uint64_t)regs->hw.rip);      print_line("\n");
+	print_line("CS:     "); print_hex((uint64_t)regs->hw.cs);       print_line("\n");
+	print_line("RFLAGS: "); print_hex((uint64_t)regs->hw.rflags);   print_line("\n");
+	print_line("RSP:    "); print_hex((uint64_t)regs->hw.rsp);      print_line("\n");
+	print_line("ERR:    "); print_hex((uint64_t)regs->err_code);    print_line("\n");
 
 	while (1) {
 		asm volatile ("cli; hlt");
 	}
 }
 
+void proc_tmp_setup();
 void idt_handler(struct idt_stack_call *regs)
 {
 	uint64_t int_no = get_vector(regs);
@@ -161,6 +138,7 @@ void idt_handler(struct idt_stack_call *regs)
 		exception_handler(regs);
 	} else {
 		void (*handler)(void) = irq_routines[int_no - 32];
+		//if (int_no == 32) { int_handler(); }
 		if (handler)
 			handler();
 		if (int_no >= 40) {
