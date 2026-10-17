@@ -4,13 +4,10 @@
 extern void retsys();
 int foo()
 {
-	print_line("I'm foo!\n");
+	//print_line("I'm foo!\n");
 	while (1) {
-		print_line("I'm foo!\n");
-		for (uint64_t i = 0; i < 0xFFFFF; i++) {
-			asm volatile ("nop");
-			//asm volatile ("cli; hlt");
-		}
+		//print_line("I'm foo!\n");
+		//for (uint64_t i = 0; i < 0xFFFFF; i++) { asm volatile ("nop"); //asm volatile ("cli; hlt"); }
 	}
 
 	//asm volatile ("sti");
@@ -21,13 +18,10 @@ int foo()
 
 int fizz()
 {
-	print_line("I'm fizz!\n");
+	//print_line("I'm fizz!\n");
 	while (1) {
-		print_line("I'm fizz!\n");
-		for (uint64_t i = 0; i < 0xFFFFF; i++) {
-			asm volatile ("nop");
-			//asm volatile ("cli; hlt");
-		}
+		//print_line("I'm fizz!\n");
+//		for (uint64_t i = 0; i < 0xFFFFF; i++) { asm volatile ("nop"); //asm volatile ("cli; hlt"); }
 	}
 
 	//asm volatile ("sti");

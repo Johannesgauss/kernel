@@ -44,12 +44,12 @@ int_handler:
 
 	mov %rsp, tss+4(%rip) 
 
-	push $GDT_OFFSET_KERNEL_DATA
+	push $GDT_OFFSET_USER_DATA
 	push %rdx // stack
 	//pushfq
 	push %rsi
 	//push $0x202 // TODO a better way!
-	push $GDT_OFFSET_KERNEL_CODE
+	push $GDT_OFFSET_USER_CODE
 	push %rdi
 
 	mov ctx_off+0x70(%rbx), %r15

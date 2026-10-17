@@ -3,6 +3,7 @@
 #include "../util/alias.h"
 #include "proc.h"
 #include "test/test.h"
+#include "../util/memory.h"
 
 #define PROCS_MAX 255
 
@@ -31,8 +32,13 @@ static inline struct proc proc_inst_inline(state_t state, virt_t ptr, size_t sta
 
 	proc.ctx.hw.rsp = vmalloc(stack_size) + stack_size;
 	proc.stbase = proc.ctx.hw.rsp;
-	proc.ctx.hw.rip = ptr;
 	proc.ctx.hw.rflags = (size_t) 0x202;
+	// Considering real programs, they will be loaded from storage, so this
+	// is just a dummy implementation anyway, so
+	// TODO! substitute this.
+	proc.ctx.hw.rip = vmalloc(5000);
+	memcpy(proc.ctx.hw.rip, ptr, 5000);
+	
 
 	return proc;
 } struct proc proc_inst(state_t state, virt_t ptr, size_t stack_size) { return proc_inst_inline(state, ptr, stack_size); }
@@ -77,9 +83,12 @@ struct proc *proc_sched(struct int_frame *intf)
 		//print_hex((uint64_t)procs[current_proc_id].ctx.rip);
 		//print_hex((uint64_t)procs[current_proc_id].ctx.rsp);
 	} else defined = true;
-	if (current_proc_id == 0)
+	if (current_proc_id == 0) {
+		print_line("fizz\n");
 		current_proc_id = 1;
-	else 
+	} else {
+		print_line("foo!\n");
 		current_proc_id = 0;
+	}
 	return &procs[current_proc_id];
 }
