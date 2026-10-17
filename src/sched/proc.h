@@ -3,6 +3,7 @@
 
 #include "../util/alias.h"
 #include "../arch/int/idt.h"
+#include "../arch/int/arch_proc.h"
 #include <stddef.h>
 
 typedef enum {
@@ -13,7 +14,7 @@ typedef enum {
 } state_t;
 
 struct proc {
-	struct int_frame ctx;
+	struct arch_proc ctx;
 	virt_t stbase;
 	state_t state;
 	utiny id;

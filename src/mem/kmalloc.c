@@ -5,7 +5,7 @@
 
 static virt_t g_page_base = (virt_t) 0xFFFF851000000000;
 static virt_t g_page_offset = (virt_t) 4096;
-static virt_t g_heap_top = (virt_t) 0xFFFF851000004096; // g_page_base + g_page_offset
+//static virt_t g_heap_top = (virt_t) 0xFFFF851000004096; // g_page_base + g_page_offset
 
 virt_t kmalloc(size_t size)
 {

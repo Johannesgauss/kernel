@@ -28,16 +28,16 @@ static inline struct proc proc_inst_inline(state_t state, virt_t ptr, size_t sta
 
 	proc.state = state;
 
-	proc.ctx.gp = (struct gp_regs) {0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	proc.ctx.intf.gp = (struct gp_regs) {0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
-	proc.ctx.hw.rsp = vmalloc(stack_size) + stack_size;
-	proc.stbase = proc.ctx.hw.rsp;
-	proc.ctx.hw.rflags = (size_t) 0x202;
+	proc.ctx.intf.hw.rsp = vmalloc(stack_size) + stack_size;
+	proc.stbase = proc.ctx.intf.hw.rsp;
+	proc.ctx.intf.hw.rflags = (size_t) 0x202;
 	// Considering real programs, they will be loaded from storage, so this
 	// is just a dummy implementation anyway, so
 	// TODO! substitute this.
-	proc.ctx.hw.rip = vmalloc(5000);
-	memcpy(proc.ctx.hw.rip, ptr, 5000);
+	proc.ctx.intf.hw.rip = vmalloc(5000);
+	memcpy(proc.ctx.intf.hw.rip, ptr, 5000);
 	
 
 	return proc;
@@ -60,11 +60,11 @@ static inline void proc_suspend_inline(ushort id)
 	procs[id].state = PROC_READY;
 } void proc_suspend(ushort id) { return proc_suspend_inline(id); }
 
-static inline void proc_switch_inline(struct int_frame *ctx)
+static inline void proc_switch_inline(struct int_frame *intf)
 {
-	procs[current_proc_id].ctx = *ctx;
+	procs[current_proc_id].ctx.intf = *intf;
 	procs[current_proc_id].state = PROC_READY;
-} void proc_switch(struct int_frame *ctx) { return proc_switch_inline(ctx); }
+} void proc_switch(struct int_frame *intf) { return proc_switch_inline(intf); }
 
 
 struct proc proc_create(virt_t ptr, size_t stack_size)
@@ -79,9 +79,9 @@ struct proc *proc_sched(struct int_frame *intf)
 	// TODO: I don't think this is the better solution!
 	static bool defined = false;
 	if (defined) {
-		procs[current_proc_id].ctx = *intf;
-		//print_hex((uint64_t)procs[current_proc_id].ctx.rip);
-		//print_hex((uint64_t)procs[current_proc_id].ctx.rsp);
+		procs[current_proc_id].ctx.intf = *intf;
+		//print_hex((uint64_t)procs[current_proc_id].ctx.intf.rip);
+		//print_hex((uint64_t)procs[current_proc_id].ctx.intf.rsp);
 	} else defined = true;
 	if (current_proc_id == 0) {
 		print_line("fizz\n");

@@ -1,4 +1,4 @@
-#include "mem/pmm.h"
+#include "../mem/pmm.h"
 #include <stdint.h>
 #include "util/memory.h"
 
@@ -34,7 +34,7 @@ void vmm_map(void *addr)
 	uint64_t *pdpt;
 	uint64_t *pd;
 	uint64_t *pt;
-	uint64_t *page;
+//	uint64_t *page;
 
 	// TODO: Of course, it's not a great idea all pages having US bit on. Change it later!
 	if (!(pml4[pml4_offset] & SET_P)) {
@@ -67,8 +67,16 @@ void vmm_map(void *addr)
 bool vmm_init()
 {
 	void *cr3;
-	asm volatile ("movq %%cr3, %0;" : "=r"(cr3) ::);
-	pml4 = phy_to_virt((uint64_t) cr3 & GET_PHY_ADDR);
+	asm volatile ("mov %%cr3, %0;" : "=r"(cr3) ::);
+	uint64_t *pml4_old = phy_to_virt((uint64_t) cr3 & GET_PHY_ADDR);
+	pml4 = pmm_alloc();
+	for (int i = 256; i < 512; i++) {
+		if (pml4_old[i] & SET_P)
+			pml4[i] = pml4_old[i];
+	}
+	asm volatile ("mov %0, %%cr3;" :: "r"(virt_to_phy((uint64_t)pml4)) :);
+	pmm_free(pml4_old);
+	/**/
 	return true;
 }
 
@@ -86,19 +94,22 @@ void vmm_free(void *addr)
 	uint64_t *pt;
 	uint64_t *page;
 
-	if (!(pml4[pml4_offset] & SET_P))
-		panic("[ FATAL ] ATTEMPT TO FREE A NON ALLOCATED PAGE!");
+	if (!(pml4[pml4_offset] & SET_P)) goto PANIC;
 	pdpt = phy_to_virt((pml4[pml4_offset] & GET_PHY_ADDR));
-	if (!(pdpt[pdpt_offset] & SET_P))
-		panic("[ FATAL ] ATTEMPT TO FREE A NON ALLOCATED PAGE!");
-	pd = phy_to_virt((pdpt[pdpt_offset] & GET_PHY_ADDR));
-	if (!(pd[pd_offset] & SET_P)) 
-		panic("[ FATAL ] ATTEMPT TO FREE A NON ALLOCATED PAGE!");
-	pt = phy_to_virt((pd[pd_offset] & GET_PHY_ADDR));
-	if (!(pt[pt_offset] & SET_P))
-		panic("[ FATAL ] ATTEMPT TO FREE A NON ALLOCATED PAGE!");
-	pmm_free(phy_to_virt(pt[pt_offset] & GET_PHY_ADDR));
-	pt[pt_offset] = 0;
 
+	if (!(pdpt[pdpt_offset] & SET_P)) goto PANIC;
+	pd = phy_to_virt((pdpt[pdpt_offset] & GET_PHY_ADDR));
+
+	if (!(pd[pd_offset] & SET_P)) goto PANIC;
+	pt = phy_to_virt((pd[pd_offset] & GET_PHY_ADDR));
+
+	if (!(pt[pt_offset] & SET_P)) goto PANIC;
+	pmm_free(phy_to_virt(pt[pt_offset] & GET_PHY_ADDR));
+
+	pt[pt_offset] = 0;
 	asm volatile ("invlpg (\%0);" :: "r"(addr) : "memory");
+
+	return;
+PANIC:
+		panic("[ FATAL ] ATTEMPT TO FREE A NON ALLOCATED PAGE!");
 }
