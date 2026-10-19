@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-// TODO: verify these values
 #define SET_P    1ULL
 #define SET_RW  (1ULL << 1)
 #define SET_US  (1ULL << 2)

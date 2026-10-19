@@ -9,9 +9,8 @@ struct arch_proc {
 
 // TODO modify name
 // btw optimize it as well
-inline void arch_proc_init_lower_half(struct arch_proc *ctx)
+inline void arch_proc_init(struct arch_proc *ctx)
 {
-	//ctx->pml4 =  g_pml4;
 	virt_array pml4 = (virt_array) pmm_alloc();
 	// cpy kernel high half stuff
 	for (int i = 0; i < 256; i++) {
@@ -25,5 +24,4 @@ inline void arch_proc_init_lower_half(struct arch_proc *ctx)
 	ctx->cr3 = virt_to_phy( pml4);
 	asm volatile ("mov %0, %%cr3;" :: "r"(ctx->cr3) :);
 	g_pml4 = pml4;
-//	pmm_free(ctx->pml4);
 }

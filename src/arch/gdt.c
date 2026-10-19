@@ -47,8 +47,8 @@ bool gdt_init()
 	gpt[0] = gdt_entry_init(0, 0, 0);
 	gpt[1] = gdt_entry_init(0, 0x000FFFFF, GDT_KERNEL_CODE_FLAGS);
 	gpt[2] = gdt_entry_init(0, 0x000FFFFF, GDT_KERNEL_DATA_FLAGS);
-	gpt[3] = gdt_entry_init(0, 0x000FFFFF, GDT_USER_CODE_FLAGS);
-	gpt[4] = gdt_entry_init(0, 0x000FFFFF, GDT_USER_DATA_FLAGS);
+	gpt[3] = gdt_entry_init(0, 0x000FFFFF, GDT_USER_DATA_FLAGS);
+	gpt[4] = gdt_entry_init(0, 0x000FFFFF, GDT_USER_CODE_FLAGS);
 
 	tss.useless_io_map = sizeof(tss) - 1;
 	gpt[5] = gdt_entry_init((uint32_t) &tss, tss.useless_io_map, GDT_TSS);

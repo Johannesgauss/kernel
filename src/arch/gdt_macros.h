@@ -30,5 +30,5 @@ R and A: whatever, let's go by 0
 
 #define GDT_KERNEL_CODE 0x08
 #define GDT_KERNEL_DATA 0x10
-#define GDT_USER_CODE   0x1b // 0x18 + 3
-#define GDT_USER_DATA   0x23 // 0x20 + 3
+#define GDT_USER_DATA  0x1b  // 0x20 + 3
+#define GDT_USER_CODE  0x23  // 0x18 + 3

@@ -4,8 +4,6 @@
 #include "util/memory.h"
 #include "../util/alias.h"
 
-#define PAGE_ENTRIES 512
-
 virt_array g_pml4;
 
 static inline void pgtotable(virt_t page)
@@ -36,7 +34,7 @@ void vmm_map(virt_t addr)
 	if (!(pdpt[pdpt_offset] & SET_P)) {
 		virt_t new_page = pmm_alloc();
 		pgtotable(new_page);
-		pdpt[pdpt_offset] = virt_to_phy(new_page) | SET_P | SET_RW | SET_US ;
+		pdpt[pdpt_offset] = virt_to_phy(new_page) | SET_P | SET_RW | SET_US;
 	}
 	pd = phy_to_virt((pdpt[pdpt_offset] & GET_PHY_ADDR));
 	if (!(pd[pd_offset] & SET_P)) {
@@ -67,7 +65,6 @@ bool vmm_init()
 	}
 	asm volatile ("mov %0, %%cr3;" :: "r"(virt_to_phy(g_pml4)) :);
 	pmm_free(pml4_old);
-	/**/
 	return true;
 }
 

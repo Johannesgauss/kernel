@@ -11,6 +11,7 @@ extern bool vmm_init();
 extern void vmm_free(void *addr);
 extern void *kmalloc(size_t size);
 extern void proc_tmp_setup();
+extern void syscall_init();
 
 void kmain() 
 {
@@ -30,6 +31,7 @@ void kmain()
 
 	proc_tmp_setup();
 
+	syscall_init();
 	if (idt_init())
 		print_line("[ SUCCESS ] Interrupt Descriptor Table (IDT) loaded.\n");
 

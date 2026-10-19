@@ -31,7 +31,7 @@ static inline struct proc proc_inst_inline(state_t state, virt_t ptr, size_t sta
 	proc.ctx.intf.gp = (struct gp_regs) {0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 	// TODO! substitute this.
-	arch_proc_init_lower_half(&proc.ctx);
+	arch_proc_init(&proc.ctx);
 
 	proc.ctx.intf.hw.rsp = usr_vmalloc(stack_size) + stack_size;
 	proc.stbase = proc.ctx.intf.hw.rsp;
