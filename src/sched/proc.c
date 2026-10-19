@@ -30,15 +30,18 @@ static inline struct proc proc_inst_inline(state_t state, virt_t ptr, size_t sta
 
 	proc.ctx.intf.gp = (struct gp_regs) {0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
-	proc.ctx.intf.hw.rsp = vmalloc(stack_size) + stack_size;
+	// TODO! substitute this.
+	arch_proc_init_lower_half(&proc.ctx);
+
+	proc.ctx.intf.hw.rsp = usr_vmalloc(stack_size) + stack_size;
 	proc.stbase = proc.ctx.intf.hw.rsp;
 	proc.ctx.intf.hw.rflags = (size_t) 0x202;
 	// Considering real programs, they will be loaded from storage, so this
 	// is just a dummy implementation anyway, so
 	// TODO! substitute this.
-	proc.ctx.intf.hw.rip = vmalloc(5000);
+
+	proc.ctx.intf.hw.rip = usr_vmalloc(5000);
 	memcpy(proc.ctx.intf.hw.rip, ptr, 5000);
-	
 
 	return proc;
 } struct proc proc_inst(state_t state, virt_t ptr, size_t stack_size) { return proc_inst_inline(state, ptr, stack_size); }

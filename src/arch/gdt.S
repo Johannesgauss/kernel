@@ -8,6 +8,7 @@ gdt_load:
 	lretq
 
 gdt_load_end:
+// TODO: hardcoded
 	mov $0x10, %rax
 	mov %rax, %ds
 	mov %rax, %ss

@@ -9,4 +9,9 @@ void kfree(virt_t addr);
 virt_t vmalloc(size_t size);
 void vfree(virt_t addr);
 
+virt_t usr_vmalloc(size_t size);
+virt_t usr_vmalloc(size_t size);
+void usr_kfree(virt_t addr);
+void usr_vfree(virt_t addr);
+
 #endif // MEM_KMALLOC_H

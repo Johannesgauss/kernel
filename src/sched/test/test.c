@@ -5,10 +5,11 @@ extern void retsys();
 int foo()
 {
 	//print_line("I'm foo!\n");
-	while (1) {
+	//while (1) {
+	//asm volatile ("nop");
 		//print_line("I'm foo!\n");
 		//for (uint64_t i = 0; i < 0xFFFFF; i++) { asm volatile ("nop"); //asm volatile ("cli; hlt"); }
-	}
+	//}
 
 	//asm volatile ("sti");
 	//while (1) { asm volatile ("cli; hlt"); }

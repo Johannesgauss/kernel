@@ -1,5 +1,29 @@
 #include "idt.h"
+#include "../vmm.h"
+#include "../../mem/pmm.h"
+#include "../../util/alias.h"
 struct arch_proc {
-	uint64_t cr3;
+	phy_t cr3;
 	struct int_frame intf;
 };
+
+// TODO modify name
+// btw optimize it as well
+inline void arch_proc_init_lower_half(struct arch_proc *ctx)
+{
+	//ctx->pml4 =  g_pml4;
+	virt_array pml4 = (virt_array) pmm_alloc();
+	// cpy kernel high half stuff
+	for (int i = 0; i < 256; i++) {
+		pml4[i] = 0;
+	}
+	for (int i = 256; i < 512; i++) {
+		if (g_pml4[i] & SET_P)
+			pml4[i] = g_pml4[i];
+	}
+
+	ctx->cr3 = virt_to_phy( pml4);
+	asm volatile ("mov %0, %%cr3;" :: "r"(ctx->cr3) :);
+	g_pml4 = pml4;
+//	pmm_free(ctx->pml4);
+}
