@@ -1,4 +1,4 @@
-#define intf_off 8
+#define intf_off 0x18
 #define pml4_off 0
 .global int_handler
 .type int_handler, @function

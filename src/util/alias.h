@@ -11,6 +11,9 @@ typedef unsigned short ushort;
 typedef unsigned long long int ullint;
 typedef long long int llint;
 
+typedef long long int max;
+typedef unsigned long long int umax;
+
 #define global static
 #define intern static
 #define local static
